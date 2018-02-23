@@ -46,7 +46,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let iconMaskImage = #imageLiteral(resourceName: "logoSignal")
         providerConfiguration.iconTemplateImageData = UIImagePNGRepresentation(iconMaskImage)
 
-        // We set the ringtoneSound property later.
+        // We don't set the ringtoneSound property, so that we use either the
+        // default iOS ringtone OR the custom ringtone associated with this user,
+        // if possible (iOS 11 or later).
 
         return providerConfiguration
     }
@@ -123,12 +125,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         update.hasVideo = call.hasLocalVideo
 
         disableUnsupportedFeatures(callUpdate: update)
-
-        // Update the provider configuration to reflect the caller's ringtone.
-        let sound = OWSSounds.ringtoneSound(for: call.thread)
-        let providerConfiguration = provider.configuration
-        providerConfiguration.ringtoneSound = OWSSounds.filename(for: sound)
-        provider.configuration =  providerConfiguration
 
         // Report the incoming call to the system
         provider.reportNewIncomingCall(with: call.localId, update: update) { error in
