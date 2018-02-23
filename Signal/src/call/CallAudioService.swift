@@ -37,7 +37,7 @@ struct AudioSource: Hashable {
         let localizedName = isBuiltInEarPiece ? UIDevice.current.localizedModel : portDescription.portName
 
         self.init(localizedName: localizedName,
-                  image:#imageLiteral(resourceName: "button_phone_white"), // TODO
+                  image: #imageLiteral(resourceName: "button_phone_white"), // TODO
                   isBuiltInSpeaker: false,
                   isBuiltInEarPiece: isBuiltInEarPiece,
                   portDescription: portDescription)
@@ -175,7 +175,7 @@ protocol CallAudioServiceDelegate: class {
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
-        self.handleState(call:call)
+        self.handleState(call: call)
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
@@ -389,7 +389,7 @@ protocol CallAudioServiceDelegate: class {
 
         vibrate()
 
-        handleCallEnded(call:call)
+        handleCallEnded(call: call)
     }
 
     private func handleBusy(call: SignalCall) {
@@ -488,13 +488,7 @@ protocol CallAudioServiceDelegate: class {
     var availableInputs: [AudioSource] {
         guard let availableInputs = avAudioSession.availableInputs else {
             // I'm not sure why this would happen, but it may indicate an error.
-            // In practice, I haven't seen it on iOS9+.
-            //
-            // I *have* seen it on iOS8, but it doesn't seem to cause any problems,
-            // so we do *not* trigger the assert on that platform.
-            if #available(iOS 9.0, *) {
-                owsFail("No available inputs or inputs not ready")
-            }
+            owsFail("No available inputs or inputs not ready")
             return [AudioSource.builtInSpeaker]
         }
 
